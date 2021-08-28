@@ -35,7 +35,7 @@ class NamingGame(object):
             + str(self.maxIterations)
             + " iterations."
         )
-        iteration = 0
+        iteration = 1
         numberOfWords = 3
         statsString = (
             '{"run-'
@@ -46,7 +46,8 @@ class NamingGame(object):
             + str(self.maxIterations)
             + "],\n"
         )
-        while iteration < (self.maxIterations + 1) and numberOfWords > 1:
+        uniqueWords = 2
+        while iteration < (self.maxIterations + 1) and uniqueWords > 1:
             LOGGER.info("Starting iteration " + str(iteration))
             statsString = (
                 statsString
@@ -59,10 +60,11 @@ class NamingGame(object):
                 + "],\n"
             )
             self.iterate()
-            iteration = iteration + 1
+            uniqueWords = self.getNumberOfUniqueWords() 
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
+            iteration = iteration + 1
         statsString = statsString + "]}"
         writeToFile("stats.log", statsString)
 
@@ -135,7 +137,7 @@ if __name__ == "__main__":
     actor3 = Actor("Actor3", ["three"])
     actor4 = Actor("Actor4", ["four"])
     actor5 = Actor("Actor5", ["five"])
-    game = NamingGame()
+    game = NamingGame(15)
     game.appendActor(actor1)
     game.appendActor(actor2)
     game.appendActor(actor3)

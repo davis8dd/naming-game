@@ -2,8 +2,8 @@ from actor import Actor
 
 import unittest
 
-class TestNamingGame(unittest.TestCase):
 
+class TestNamingGame(unittest.TestCase):
     def test_empty_initial_vocabulary(self):
         actor1 = Actor("TestActor")
         self.assertTrue(actor1.vocabulary == [])
@@ -39,5 +39,5 @@ class TestNamingGame(unittest.TestCase):
         self.assertEqual(speaker.getVocabularySize(), 3)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

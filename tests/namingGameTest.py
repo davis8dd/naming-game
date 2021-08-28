@@ -3,8 +3,8 @@ from namingGame import NamingGame
 
 import unittest
 
-class TestNamingGame(unittest.TestCase):
 
+class TestNamingGame(unittest.TestCase):
     def test_game_iteration(self):
         actor1 = Actor("Actor1", ["one"])
         actor2 = Actor("Actor2", ["two"])
@@ -24,5 +24,5 @@ class TestNamingGame(unittest.TestCase):
         self.assertEqual(game.getNumberOfUniqueWords(), 4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

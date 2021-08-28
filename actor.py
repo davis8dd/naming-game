@@ -1,12 +1,15 @@
 import random
 
+
 class Actor(object):
-    def __init__(self, name, initialVocabulary = list()):
+    def __init__(self, name, initialVocabulary=list()):
         self.name = name
         self.vocabulary = initialVocabulary
 
     def __repr__(self):
-        return "Actor(name = " + self.name + ", vocabulary = " + str(self.vocabulary) + ")"
+        return (
+            "Actor(name = " + self.name + ", vocabulary = " + str(self.vocabulary) + ")"
+        )
 
     def __str__(self):
         return "(" + self.name + ", vocabulary = " + str(self.vocabulary) + ")"

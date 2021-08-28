@@ -18,17 +18,22 @@ class NamingGame(object):
     def __str__(self):
         return "A naming game instance with " + str(self.actors) + " actors."
 
-    def play(self, iterationsToPlay):
+    def play(self, maxIterationsToPlay):
         LOGGER.info("Starting naming game with " + str(self.actors)
-                + " fully connected actors, and will play for " + str(iterationsToPlay) + " iterations.")
+                + " fully connected actors, and will play for " + str(maxIterationsToPlay) + " iterations.")
         iteration = 0
-        while iteration < iterationsToPlay:
+        numberOfWords = 3
+        statsString = "[[numberOfWords = " + str(numberOfWords) + ", iterations = " + str(maxIterationsToPlay) + "],\n"
+        while iteration < maxIterationsToPlay and numberOfWords > 1:
             LOGGER.info("Starting iteration " + str(iteration))
+            statsString = statsString + "[" + str(iteration) + ", " + str(self.getNumberOfWords()) + ", " + str(self.getNumberOfUniqueWords()) + "],\n"
             self.iterate()
             iteration = iteration + 1
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
+        statsString = statsString + "]"
+        writeToFile("stats.log", statsString)
 
     def getActors(self):
         return self.actors
@@ -48,6 +53,20 @@ class NamingGame(object):
         self.actors.append(speaker)
         speaker.speakRandomlyTo(listener)
 
+    def getNumberOfWords(self):
+        totalWords = 0
+        for actor in self.actors:
+            totalWords = totalWords + actor.getVocabularySize()
+        return totalWords
+
+    def getNumberOfUniqueWords(self):
+        uniqueWords = set()
+        for actor in self.actors:
+            for word in actor.getVocabulary():
+                uniqueWords.add(word)
+        return len(uniqueWords)
+
+
 def setupLogging(filename):
     """
     Initialize logger.
@@ -65,6 +84,9 @@ def setupLogging(filename):
 
     return LOGGER
 
+def writeToFile(filename, dataToWrite):
+    with open(filename, "w") as theFile:
+        theFile.write(dataToWrite)
 
 if __name__ == '__main__':
     """

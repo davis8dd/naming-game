@@ -37,10 +37,13 @@ class Actor(object):
             self.vocabulary.append(wordSpoken)
             return False
 
-    def get_random_word(self, wordList):
+    def get_new_word(self, wordList):
         """
         Get a new word from the allowed list and add it to the vocabulary.
         TODO: THIS LIST SHOULD BE COMING FROM THE GAME OBJECT.
         """
         newWord = random.choice(wordList)
         return newWord
+
+    def getVocabularySize(self):
+        return len(self.vocabulary)

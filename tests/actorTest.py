@@ -58,6 +58,12 @@ class TestNamingGame(unittest.TestCase):
         self.assertTrue(listener.getVocabulary() == vocabAfter)
         self.assertTrue(speaker.getVocabulary() == vocabAfter)
 
+    def test_get_vocabulary_size(self):
+        speakerVocab = ["ATSALLAD", "AKNORAB", "AVLA"]
+        speaker = Actor("speaker", speakerVocab)
+
+        self.assertEqual(speaker.getVocabularySize(), 3)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,6 +2,7 @@ from actor import Actor
 
 import logging
 import random
+import string
 import time
 
 LOGGER = logging.getLogger("NamingGame")
@@ -9,10 +10,11 @@ LOGGER.level = logging.INFO
 
 
 class NamingGame(object):
-    def __init__(self, maxIterations=10):
+    def __init__(self, maxIterations=10, wordLength=10):
         self.maxIterations = maxIterations
+        self.wordLength = wordLength
         self.actors = list()
-        self.newWords = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+        self.globalVocabulary = set()
         LOGGER.info("Starting NamingGame")
 
     def __repr__(self):
@@ -47,8 +49,10 @@ class NamingGame(object):
             + "],\n"
         )
         uniqueWords = 2
-        while iteration < (self.maxIterations + 1) and uniqueWords > 1:
+        while iteration < (self.maxIterations + 1):
             LOGGER.info("Starting iteration " + str(iteration))
+            self.iterate()
+            uniqueWords = self.getNumberOfUniqueWords() 
             statsString = (
                 statsString
                 + "["
@@ -56,11 +60,9 @@ class NamingGame(object):
                 + ", "
                 + str(self.getNumberOfWords())
                 + ", "
-                + str(self.getNumberOfUniqueWords())
+                + str(uniqueWords)
                 + "],\n"
             )
-            self.iterate()
-            uniqueWords = self.getNumberOfUniqueWords() 
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
@@ -99,10 +101,19 @@ class NamingGame(object):
                 uniqueWords.add(word)
         return len(uniqueWords)
 
+    def generateNewWord(self):
+        newWord = "".join(random.choice(string.ascii_uppercase) for i in range(self.wordLength))
+        LOGGER.info("Generated word " + newWord)
+        while newWord in self.globalVocabulary:
+            newWord = "".join(random.choice(string.ascii_uppercase) for i in Range(self.wordLength))
+        self.globalVocabulary.add(newWord)
+        LOGGER.info("Adding new word " + newWord + " to global vocab list")
+        return newWord
+
 
 def setupLogging(filename):
     """
-    Initialize logger.
+    Initialize logging.  One logger outputs to a file and another outputs to the console.
     """
     fileLogHandler = logging.FileHandler(filename)
 
@@ -132,12 +143,17 @@ if __name__ == "__main__":
     logfile = "output.log"
     LOGGER = setupLogging(filename=logfile)
     LOGGER.info("Starting game")
-    actor1 = Actor("Actor1", ["one"])
-    actor2 = Actor("Actor2", ["two"])
-    actor3 = Actor("Actor3", ["three"])
-    actor4 = Actor("Actor4", ["four"])
-    actor5 = Actor("Actor5", ["five"])
     game = NamingGame(15)
+    #actor1 = Actor("Actor1", ["one"], game.generateNewWord)
+    #actor2 = Actor("Actor2", ["two"], game.generateNewWord)
+    #actor3 = Actor("Actor3", ["three"], game.generateNewWord)
+    #actor4 = Actor("Actor4", ["four"], game.generateNewWord)
+    #actor5 = Actor("Actor5", ["five"], game.generateNewWord)
+    actor1 = Actor("Actor1", list(), game.generateNewWord)
+    actor2 = Actor("Actor2", list(), game.generateNewWord)
+    actor3 = Actor("Actor3", list(), game.generateNewWord)
+    actor4 = Actor("Actor4", list(), game.generateNewWord)
+    actor5 = Actor("Actor5", list(), game.generateNewWord)
     game.appendActor(actor1)
     game.appendActor(actor2)
     game.appendActor(actor3)

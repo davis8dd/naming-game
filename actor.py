@@ -1,10 +1,15 @@
+import logging
 import random
+
+LOGGER = logging.getLogger("NamingGame")
+LOGGER.level = logging.INFO
 
 
 class Actor(object):
-    def __init__(self, name, initialVocabulary=list()):
+    def __init__(self, name, initialVocabulary=list(), newWordFunction=lambda :"empty"):
         self.name = name
         self.vocabulary = initialVocabulary
+        self.newWordFunction = newWordFunction
 
     def __repr__(self):
         return (
@@ -21,6 +26,7 @@ class Actor(object):
         if wordToSpeak not in self.vocabulary:
             print("Word " + wordToSpeak + " not in listener's vocabulary")
             return False
+        LOGGER.info("ACTOR " + str(self) + " said " + wordToSpeak)
         print(str(self) + " said " + wordToSpeak)
         isInListenersVocab = listener.hear(wordToSpeak)
         # if word is in hearer's vocabulary, remove all other words from vocabulary
@@ -28,6 +34,9 @@ class Actor(object):
             self.vocabulary = [wordToSpeak]
 
     def speakRandomlyTo(self, listener):
+        print("Actor " + str(self) + " getting new word")
+        if len(self.vocabulary) is 0:
+            self.vocabulary.append(self.newWordFunction())
         wordToSpeak = random.choice(self.vocabulary)
         self.speakTo(listener, wordToSpeak)
 
@@ -39,14 +48,6 @@ class Actor(object):
         else:
             self.vocabulary.append(wordSpoken)
             return False
-
-    def get_new_word(self, wordList):
-        """
-        Get a new word from the allowed list and add it to the vocabulary.
-        TODO: THIS LIST SHOULD BE COMING FROM THE GAME OBJECT.
-        """
-        newWord = random.choice(wordList)
-        return newWord
 
     def getVocabularySize(self):
         return len(self.vocabulary)

@@ -40,9 +40,10 @@ class NamingGame(object):
         )
         iteration = 1
         numberOfWords = 3
+        timeOfRun = str(time.time())
         stats = {
             "run-"
-            + str(time.time()): [
+            + timeOfRun: [
                 {"numberOfWords": numberOfWords},
                 {"iterations": self.maxIterations},
             ],
@@ -60,7 +61,7 @@ class NamingGame(object):
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
             iteration = iteration + 1
-        writeToFile("stats.json", json.dumps(stats))
+        writeToFile("stats-" + timeOfRun + ".json", json.dumps(stats))
 
     def getActors(self):
         return self.actors

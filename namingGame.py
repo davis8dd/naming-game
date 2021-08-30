@@ -39,29 +39,36 @@ class NamingGame(object):
             + " iterations."
         )
         iteration = 1
-        numberOfWords = 3
         timeOfRun = str(time.time())
         stats = {
             "run-"
             + timeOfRun: [
-                {"numberOfWords": numberOfWords},
                 {"iterations": self.maxIterations},
             ],
             "iterationData": [],
         }
-        uniqueWords = 2
-        while iteration < (self.maxIterations + 1):
+        uniqueWords = self.getNumberOfUniqueWords()
+        totalWords = self.getNumberOfWords()
+        while not self.isGameComplete(
+            iteration, totalWords, uniqueWords, len(self.actors)
+        ):
             LOGGER.info("Starting iteration " + str(iteration))
             self.iterate()
             uniqueWords = self.getNumberOfUniqueWords()
-            stats.get("iterationData").append(
-                [iteration, self.getNumberOfWords(), uniqueWords]
-            )
+            totalWords = self.getNumberOfWords()
+            stats.get("iterationData").append([iteration, totalWords, uniqueWords])
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
-            iteration = iteration + 1
+            iteration += 1
         writeToFile("stats-" + timeOfRun + ".json", json.dumps(stats))
+
+    def isGameComplete(self, iteration, totalWords, uniqueWords, numberOfActors):
+        if iteration > self.maxIterations:
+            return True
+        if uniqueWords == 1 and totalWords == numberOfActors:
+            return True
+        return False
 
     def getActors(self):
         return self.actors

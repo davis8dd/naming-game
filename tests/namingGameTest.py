@@ -35,7 +35,6 @@ class TestNamingGame(unittest.TestCase):
 
         self.assertEqual(game.getNumberOfWords(), 3)
         self.assertEqual(game.getNumberOfUniqueWords(), 2)
-        #self.assertEqual(game.globalVocabulary, ("one", "two"))
 
     def test_playSingleIterationWithRandomWord(self):
         actor1 = Actor("Actor1")

@@ -6,7 +6,7 @@ LOGGER.level = logging.INFO
 
 
 class Actor(object):
-    def __init__(self, name, initialVocabulary=list(), newWordFunction=lambda :"empty"):
+    def __init__(self, name, initialVocabulary=list(), newWordFunction=lambda: "empty"):
         self.name = name
         self.vocabulary = initialVocabulary
         self.newWordFunction = newWordFunction

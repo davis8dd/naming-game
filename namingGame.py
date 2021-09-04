@@ -11,10 +11,15 @@ LOGGER.level = logging.INFO
 
 
 class NamingGame(object):
-    def __init__(self, maxIterations=10, wordLength=10):
+    def __init__(self, numberOfActors=7, maxIterations=10, wordLength=10, actors=list()):
         self.maxIterations = maxIterations
         self.wordLength = wordLength
-        self.actors = list()
+        self.actors = actors
+        if len(self.actors) is 0:
+            for i in range (1, numberOfActors + 1):
+                self.actors.append(Actor("Actor" + str(i), list(), self.generateNewWord))
+        else:
+            self.actors = actors
         self.globalVocabulary = set()
         LOGGER.info("Starting NamingGame")
 
@@ -43,7 +48,7 @@ class NamingGame(object):
         stats = {
             "run-"
             + timeOfRun: [
-                {"iterations": self.maxIterations},
+                {"number of actors": len(self.actors), "max iterations": self.maxIterations},
             ],
             "iterationData": [],
         }
@@ -147,15 +152,5 @@ if __name__ == "__main__":
     logfile = "output.log"
     LOGGER = setupLogging(filename=logfile)
     LOGGER.info("Starting game")
-    game = NamingGame(15)
-    actor1 = Actor("Actor1", list(), game.generateNewWord)
-    actor2 = Actor("Actor2", list(), game.generateNewWord)
-    actor3 = Actor("Actor3", list(), game.generateNewWord)
-    actor4 = Actor("Actor4", list(), game.generateNewWord)
-    actor5 = Actor("Actor5", list(), game.generateNewWord)
-    game.appendActor(actor1)
-    game.appendActor(actor2)
-    game.appendActor(actor3)
-    game.appendActor(actor4)
-    game.appendActor(actor5)
+    game = NamingGame(maxIterations=15)
     game.play()

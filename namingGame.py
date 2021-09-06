@@ -14,27 +14,47 @@ LOGGER.level = logging.INFO
 
 class NamingGame(object):
     def __init__(self, numberOfActors=7, maxIterations=10, wordLength=10, actors=list()):
+        LOGGER.debug("Creating new game! Input params: (numOfActors=" + str(numberOfActors) + ", maxIterations=" + str(maxIterations) + ", wordLength=" + str(wordLength) + ", actors=" + str(actors) + ")")
         self.maxIterations = maxIterations
         self.wordLength = wordLength
-        self.actors = actors
-        if len(self.actors) is 0:
+        if numberOfActors is 0:
+            self.actors = list()
+        else:
+            self.actors = list()
             for i in range (1, numberOfActors + 1):
                 self.actors.append(Actor("Actor" + str(i), list(), self.generateNewWord))
-        else:
-            self.actors = actors
         self.globalVocabulary = set()
+        LOGGER.debug("CREATED NEW GAME! Game is: " + str(self))
 
     def __repr__(self):
         return (
-            "NamingGame(actors="
-            + str(self.actors)
+            "NamingGame(numberOfActors="
+            + str(len(self.actors))
             + ", maxIterations="
             + str(self.maxIterations)
+            + ", wordLength="
+            + str(self.wordLength)
+            + ", actors="
+            + str(self.actors)
+            + ", globalVocabulary="
+            + str(self.globalVocabulary)
             + ")"
         )
 
     def __str__(self):
-        return "A naming game instance with " + str(self.actors) + " actors."
+        return (
+            "NamingGame(numberOfActors="
+            + str(len(self.actors))
+            + ", maxIterations="
+            + str(self.maxIterations)
+            + ", wordLength="
+            + str(self.wordLength)
+            + ", actors="
+            + str(self.actors)
+            + ", globalVocabulary="
+            + str(self.globalVocabulary)
+            + ")"
+        )
 
     def play(self):
         LOGGER.info(
@@ -64,6 +84,7 @@ class NamingGame(object):
             totalWords = self.getNumberOfWords()
             stats.get("iterationData").append([iteration, totalWords, uniqueWords])
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
+
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
             iteration += 1
@@ -103,8 +124,9 @@ class NamingGame(object):
     def getNumberOfUniqueWords(self):
         uniqueWords = set()
         for actor in self.actors:
-            for word in actor.getVocabulary():
-                uniqueWords.add(word)
+            if len(actor.getVocabulary()) != 0:
+                for word in actor.getVocabulary():
+                    uniqueWords.add(word)
         return len(uniqueWords)
 
     def generateNewWord(self):

@@ -24,24 +24,23 @@ class Actor(object):
 
     def speakTo(self, listener, wordToSpeak):
         if wordToSpeak not in self.vocabulary:
-            print("Word " + wordToSpeak + " not in listener's vocabulary")
+            LOGGER.info("Word " + wordToSpeak + " not in listener's vocabulary")
             return False
         LOGGER.info("ACTOR " + str(self) + " said " + wordToSpeak)
-        print(str(self) + " said " + wordToSpeak)
         isInListenersVocab = listener.hear(wordToSpeak)
         # if word is in hearer's vocabulary, remove all other words from vocabulary
         if isInListenersVocab:
             self.vocabulary = [wordToSpeak]
 
     def speakRandomlyTo(self, listener):
-        print("Actor " + str(self) + " getting new word")
+        LOGGER.debug("Actor " + str(self) + " getting new word")
         if len(self.vocabulary) is 0:
             self.vocabulary.append(self.newWordFunction())
         wordToSpeak = random.choice(self.vocabulary)
         self.speakTo(listener, wordToSpeak)
 
     def hear(self, wordSpoken):
-        print(str(self) + " heard word " + str(wordSpoken))
+        LOGGER.debug(str(self) + " heard word " + str(wordSpoken))
         if wordSpoken in self.vocabulary:
             self.vocabulary = [wordSpoken]
             return True

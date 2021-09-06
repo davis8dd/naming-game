@@ -1,5 +1,7 @@
 from actor import Actor
 
+import argparse
+import configparser
 import json
 import logging
 import random
@@ -21,7 +23,6 @@ class NamingGame(object):
         else:
             self.actors = actors
         self.globalVocabulary = set()
-        LOGGER.info("Starting NamingGame")
 
     def __repr__(self):
         return (
@@ -145,12 +146,46 @@ def writeToFile(filename, dataToWrite):
         theFile.write(dataToWrite)
 
 
-if __name__ == "__main__":
+def processArguments():
     """
-    Run the game.
+    Process and validate command line arguments.
+    """
+    parser = argparse.ArgumentParser(description='Configure the Naming Game.')
+    parser.add_argument('--configFile', default='config.ini', help='The configuration file (default is config.ini).', type=str)
+    parser.add_argument('--targetEnv', default='LOCAL', help='Target environment.', type=str)
+    parser.add_argument('--startup_message', help='Welcome message', type=str)
+    args = parser.parse_args()
+
+    return args
+
+
+def processConfigs(configFile, environment):
+    """
+    Process the configuration file.
+    """
+    configs = configparser.ConfigParser()
+    configs.read(configFile)
+    return configs[environment]
+
+
+def run():
+    """
+    Configure the runtime environment and run the naming game.
     """
     logfile = "output.log"
     LOGGER = setupLogging(filename=logfile)
-    LOGGER.info("Starting game")
-    game = NamingGame(maxIterations=15)
+    LOGGER.info("Booting up the Naming Game.  Processing arguments.")
+
+    args = processArguments()
+    LOGGER.debug('Read arguments: ' + str(args))
+    targetEnv = args.targetEnv if args.targetEnv else 'LOCAL'
+
+    configs = processConfigs(args.configFile, targetEnv)
+    LOGGER.info(configs['startup_message'])
+
+    game = NamingGame(numberOfActors=int(configs['number_of_actors']), maxIterations=int(configs['maximum_iterations']))
     game.play()
+
+
+if __name__ == "__main__":
+    run()

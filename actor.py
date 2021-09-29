@@ -2,11 +2,11 @@ import logging
 import random
 
 LOGGER = logging.getLogger("NamingGame")
-LOGGER.level = logging.INFO
+LOGGER.level = logging.DEBUG
 
 
 class Actor(object):
-    def __init__(self, name, initialVocabulary=list(), newWordFunction=lambda: "empty"):
+    def __init__(self, name, initialVocabulary=set(), newWordFunction=lambda: "empty"):
         self.name = name
         self.vocabulary = initialVocabulary
         self.newWordFunction = newWordFunction
@@ -30,22 +30,24 @@ class Actor(object):
         isInListenersVocab = listener.hear(wordToSpeak)
         # if word is in hearer's vocabulary, remove all other words from vocabulary
         if isInListenersVocab:
-            self.vocabulary = [wordToSpeak]
+            self.vocabulary.clear()
+            self.vocabulary.add(wordToSpeak)
 
     def speakRandomlyTo(self, listener):
         LOGGER.debug("Actor " + str(self) + " getting new word")
         if len(self.vocabulary) is 0:
-            self.vocabulary.append(self.newWordFunction())
-        wordToSpeak = random.choice(self.vocabulary)
+            self.vocabulary.add(self.newWordFunction())
+        wordToSpeak = random.choice(list(self.vocabulary))
         self.speakTo(listener, wordToSpeak)
 
     def hear(self, wordSpoken):
         LOGGER.debug(str(self) + " heard word " + str(wordSpoken))
         if wordSpoken in self.vocabulary:
-            self.vocabulary = [wordSpoken]
+            self.vocabulary.clear()
+            self.vocabulary.add(wordSpoken)
             return True
         else:
-            self.vocabulary.append(wordSpoken)
+            self.vocabulary.add(wordSpoken)
             return False
 
     def getVocabularySize(self):

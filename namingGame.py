@@ -8,21 +8,38 @@ import random
 import string
 import time
 
-LOGGER = logging.getLogger("NamingGame")
-LOGGER.level = logging.INFO
+LOGGER = logging.getLogger("NamingGameApp")
+LOGGER.level = logging.DEBUG
+
+
+def writeToFile(filename, dataToWrite):
+    with open(filename, "w") as theFile:
+        theFile.write(dataToWrite)
 
 
 class NamingGame(object):
-    def __init__(self, numberOfActors=7, maxIterations=10, wordLength=10, actors=list()):
-        LOGGER.debug("Creating new game! Input params: (numOfActors=" + str(numberOfActors) + ", maxIterations=" + str(maxIterations) + ", wordLength=" + str(wordLength) + ", actors=" + str(actors) + ")")
+    def __init__(
+        self, numberOfActors=7, maxIterations=10, wordLength=10, actors=list()
+    ):
+        LOGGER.debug(
+            "Creating new game! Input params: (numOfActors="
+            + str(numberOfActors)
+            + ", maxIterations="
+            + str(maxIterations)
+            + ", wordLength="
+            + str(wordLength)
+            + ", actors="
+            + str(actors)
+            + ")"
+        )
         self.maxIterations = maxIterations
         self.wordLength = wordLength
         if numberOfActors is 0:
             self.actors = list()
         else:
             self.actors = list()
-            for i in range (1, numberOfActors + 1):
-                self.actors.append(Actor("Actor" + str(i), list(), self.generateNewWord))
+            for i in range(1, numberOfActors + 1):
+                self.actors.append(Actor("Actor" + str(i), set(), self.generateNewWord))
         self.globalVocabulary = set()
         LOGGER.debug("CREATED NEW GAME! Game is: " + str(self))
 
@@ -56,6 +73,28 @@ class NamingGame(object):
             + ")"
         )
 
+    def statsWriter(self):
+        timeOfRun = str(time.time())
+        stats = {
+            "run-"
+            + timeOfRun: [
+                {
+                    "number of actors": len(self.actors),
+                    "max iterations": self.maxIterations,
+                },
+            ],
+            "IterationDataTypes": "[iteration, totalWords, uniqueWords, probabilityOfSuccess]",
+            "iterationData": [],
+        }
+        while True:
+            try:
+                blah = yield
+                stats.get("iterationData").append(blah)
+            except Exception:
+                LOGGER.error("Can't collect stats")
+            else:
+                writeToFile("coroutine-stats-" + timeOfRun + ".json", json.dumps(stats))
+
     def play(self):
         LOGGER.info(
             "Starting naming game with "
@@ -65,30 +104,28 @@ class NamingGame(object):
             + " iterations."
         )
         iteration = 1
-        timeOfRun = str(time.time())
-        stats = {
-            "run-"
-            + timeOfRun: [
-                {"number of actors": len(self.actors), "max iterations": self.maxIterations},
-            ],
-            "iterationData": [],
-        }
+        statsCollector = self.statsWriter()
+        next(statsCollector)
         uniqueWords = self.getNumberOfUniqueWords()
         totalWords = self.getNumberOfWords()
         while not self.isGameComplete(
             iteration, totalWords, uniqueWords, len(self.actors)
         ):
             LOGGER.info("Starting iteration " + str(iteration))
-            self.iterate()
+            probabilityOfSuccess = (
+                self.iterate()
+            )  # If all selections are random, what's the ratio of speaker's vocab in listener's vocab?
             uniqueWords = self.getNumberOfUniqueWords()
             totalWords = self.getNumberOfWords()
-            stats.get("iterationData").append([iteration, totalWords, uniqueWords])
+
+            statsCollector.send(
+                [iteration, totalWords, uniqueWords, probabilityOfSuccess]
+            )
             LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
 
             for actor in self.actors:
                 LOGGER.info("    " + str(actor))
             iteration += 1
-        writeToFile("stats-" + timeOfRun + ".json", json.dumps(stats))
 
     def isGameComplete(self, iteration, totalWords, uniqueWords, numberOfActors):
         if iteration > self.maxIterations:
@@ -105,7 +142,11 @@ class NamingGame(object):
 
     def iterate(self):
         """
-        Asdf.
+        Perform a single iteration:
+          1) Choose a speaker
+          2) Choose a listener
+          3) Choose a word for the speaker to speak to the listener
+          4) Update vocabularies accordingly
         """
         # Randomly choose speaker
         speaker = random.choice(self.actors)
@@ -114,6 +155,22 @@ class NamingGame(object):
         listener = random.choice(self.actors)
         self.actors.append(speaker)
         speaker.speakRandomlyTo(listener)
+        LOGGER.info(
+            "    SPEAKER " + str(speaker) + " vocab is " + str(speaker.getVocabulary())
+        )
+        LOGGER.info(
+            "    LISTENER "
+            + str(listener)
+            + " vocab is "
+            + str(listener.getVocabulary())
+        )
+        successfulWords = len(
+            speaker.getVocabulary().intersection(listener.getVocabulary())
+        )
+        probabilityOfSuccess = (
+            successfulWords / speaker.getVocabularySize()
+        )  # NOT CORRECT
+        return probabilityOfSuccess
 
     def getNumberOfWords(self):
         totalWords = 0
@@ -141,73 +198,3 @@ class NamingGame(object):
         self.globalVocabulary.add(newWord)
         LOGGER.info("Adding new word " + newWord + " to global vocab list")
         return newWord
-
-
-def setupLogging(filename):
-    """
-    Initialize logging.  One logger outputs to a file and another outputs to the console.
-    """
-    fileLogHandler = logging.FileHandler(filename)
-
-    fileLogHandler.setLevel(logging.DEBUG)
-    fileFormatter = logging.Formatter(
-        "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
-    )
-    fileLogHandler.setFormatter(fileFormatter)
-    LOGGER.addHandler(fileLogHandler)
-
-    consoleLogHandler = logging.StreamHandler()
-    consoleLogHandler.setLevel(logging.INFO)
-    LOGGER.addHandler(consoleLogHandler)
-
-    return LOGGER
-
-
-def writeToFile(filename, dataToWrite):
-    with open(filename, "w") as theFile:
-        theFile.write(dataToWrite)
-
-
-def processArguments():
-    """
-    Process and validate command line arguments.
-    """
-    parser = argparse.ArgumentParser(description='Configure the Naming Game.')
-    parser.add_argument('--configFile', default='config.ini', help='The configuration file (default is config.ini).', type=str)
-    parser.add_argument('--targetEnv', default='LOCAL', help='Target environment.', type=str)
-    parser.add_argument('--startup_message', help='Welcome message', type=str)
-    args = parser.parse_args()
-
-    return args
-
-
-def processConfigs(configFile, environment):
-    """
-    Process the configuration file.
-    """
-    configs = configparser.ConfigParser()
-    configs.read(configFile)
-    return configs[environment]
-
-
-def run():
-    """
-    Configure the runtime environment and run the naming game.
-    """
-    logfile = "output.log"
-    LOGGER = setupLogging(filename=logfile)
-    LOGGER.info("Booting up the Naming Game.  Processing arguments.")
-
-    args = processArguments()
-    LOGGER.debug('Read arguments: ' + str(args))
-    targetEnv = args.targetEnv if args.targetEnv else 'LOCAL'
-
-    configs = processConfigs(args.configFile, targetEnv)
-    LOGGER.info(configs['startup_message'])
-
-    game = NamingGame(numberOfActors=int(configs['number_of_actors']), maxIterations=int(configs['maximum_iterations']))
-    game.play()
-
-
-if __name__ == "__main__":
-    run()

@@ -22,7 +22,7 @@ Dynamics characterized by:
 These quantities are expected to followe power law behaviors [reference p.31]
 
 # How to run:
-`python3 namingGame.py`
+`python3 namingGameApp.py`
 
 ## Testing:
 Generate code statement coverage:

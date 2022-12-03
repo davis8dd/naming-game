@@ -2,3 +2,4 @@ black
 
 # Testing
 pytest
+coverage

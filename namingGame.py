@@ -34,7 +34,7 @@ class NamingGame(object):
         )
         self.maxIterations = maxIterations
         self.wordLength = wordLength
-        if numberOfActors is 0:
+        if numberOfActors == 0:
             self.actors = list()
         else:
             self.actors = list()
@@ -121,10 +121,10 @@ class NamingGame(object):
             statsCollector.send(
                 [iteration, totalWords, uniqueWords, probabilityOfSuccess]
             )
-            LOGGER.info("After iteration " + str(iteration) + ", the game state is:")
+            LOGGER.debug("After iteration " + str(iteration) + ", the game state is:")
 
             for actor in self.actors:
-                LOGGER.info("    " + str(actor))
+                LOGGER.debug("    " + str(actor))
             iteration += 1
 
     def isGameComplete(self, iteration, totalWords, uniqueWords, numberOfActors):

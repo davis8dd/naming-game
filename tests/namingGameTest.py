@@ -22,7 +22,7 @@ class TestNamingGame(unittest.TestCase):
         game.appendActor(actor1)
         game.appendActor(actor2)
 
-        game.iterate()
+        game._iterate()
 
         self.assertEqual(0, 0)
 
@@ -34,7 +34,7 @@ class TestNamingGame(unittest.TestCase):
         game.appendActor(actor1)
         game.appendActor(actor2)
 
-        game.iterate()
+        game._iterate()
 
         self.assertEqual(game.getNumberOfWords(), 3)
         self.assertEqual(game.getNumberOfUniqueWords(), 2)
@@ -55,11 +55,32 @@ class TestNamingGame(unittest.TestCase):
         game.appendActor(actor1)
         game.appendActor(actor2)
 
-        game.iterate()
+        game._iterate()
 
         self.assertEqual(game.getNumberOfWords(), 2)
         self.assertEqual(game.getNumberOfUniqueWords(), 1)
 
+
+    def test_statsWriter(self):
+        game = NamingGame(maxIterations=1, numberOfActors=0, gameId="testgame")
+        actor1 = Actor(
+            name="Actor1",
+            initialVocabulary=set(),
+            newWordFunction=game.generateNewWord,
+        )
+        actor2 = Actor(
+            name="Actor2",
+            initialVocabulary=set(),
+            newWordFunction=game.generateNewWord,
+        )
+
+        game.appendActor(actor1)
+        game.appendActor(actor2)
+
+        game.play()
+        print("Game is "+ str(game.stats))
+
+        self.assertEqual(game.stats["run-testgame"], [{'number of actors': 2, 'max iterations': 1}])
 
 if __name__ == "__main__":
     unittest.main()

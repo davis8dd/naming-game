@@ -4,7 +4,14 @@ import unittest
 
 
 class TestNamingGame(unittest.TestCase):
+    """
+    Test the NamingGame API.
+    """
+
     def test_empty_initial_vocabulary(self):
+        """
+        Test initializing actor's vocabulary with an empty set and also with a non-empty set.
+        """
         actor1 = Actor("TestActor")
         self.assertTrue(actor1.vocabulary == set())
 
@@ -12,6 +19,9 @@ class TestNamingGame(unittest.TestCase):
         self.assertTrue(actor2.vocabulary == set(["one", "two"]))
 
     def test_naming_game_failure(self):
+        """
+        Validate listener gains vocabulary after listening to a new word.
+        """
         speakerVocab = ["ATSALLAD", "AKNORAB", "AVLA"]
         listenerVocab = ["TARRAB", "AVLA", "OTEROL"]
         listenerVocabAfter = ["TARRAB", "AVLA", "OTEROL", "ATSALLAD"]
@@ -22,6 +32,9 @@ class TestNamingGame(unittest.TestCase):
         self.assertEqual(listener.getVocabulary(), set(listenerVocabAfter))
 
     def test_naming_game_success(self):
+        """
+        Validate listener and speaker vocabularies collapse after listening to a known word.
+        """
         speakerVocab = ["ATSALLAD", "AKNORAB", "AVLA"]
         listenerVocab = ["TARRAB", "AVLA", "OTEROL"]
         vocabAfter = ["AVLA"]
@@ -33,6 +46,9 @@ class TestNamingGame(unittest.TestCase):
         self.assertEqual(speaker.getVocabulary(), set(vocabAfter))
 
     def test_get_vocabulary_size(self):
+        """
+        Validate getVocabularySize() matches number of words vocabulary word size.
+        """
         speakerVocab = ["ATSALLAD", "AKNORAB", "AVLA"]
         speaker = Actor("speaker", set(speakerVocab))
 

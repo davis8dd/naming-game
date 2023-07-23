@@ -1,4 +1,9 @@
+# Formatting
 black
+
+# Plotting
+matplotlib
+pyqt5
 
 # Testing
 pytest

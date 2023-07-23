@@ -1,15 +1,39 @@
 from namingGame import NamingGame
+import plotter
 
 import argparse
 import configparser
-import json
 import logging
-import random
-import string
-import time
 
 LOGGER = logging.getLogger("NamingGameApp")
 LOGGER.level = logging.DEBUG
+
+
+def run():
+    """
+    Configure the runtime environment and run the naming game.
+    """
+    logfile = "output.log"
+    LOGGER = setupLogging(filename=logfile)
+    LOGGER.info("Initializing the Naming Game.  Processing arguments.")
+
+    args = processArguments()
+    LOGGER.debug("Read arguments: " + str(args))
+    targetEnv = args.targetEnv if args.targetEnv else "LOCAL"
+
+    configs = processConfigs(args.configFile, targetEnv)
+    LOGGER.info(configs["startup_message"])
+
+    generate_plot = configs.getboolean('generate_plot')
+    show_plot = configs.getboolean('show_plot')
+
+    game = NamingGame(
+        numberOfActors=int(configs["number_of_actors"]),
+        maxIterations=int(configs["maximum_iterations"]),
+    )
+    game.play()
+    if generate_plot:
+        plotter.plot(filename=game.gameId + ".json", showPlots=show_plot)
 
 
 def setupLogging(filename):
@@ -40,7 +64,7 @@ def processArguments():
     parser.add_argument(
         "--configFile",
         default="config.ini",
-        help="The configuration file (default is config.ini).",
+        help="File to configure the naming game.  Default is 'config.ini'.",
         type=str,
     )
     parser.add_argument(
@@ -61,27 +85,8 @@ def processConfigs(configFile, environment):
     return configs[environment]
 
 
-def run():
-    """
-    Configure the runtime environment and run the naming game.
-    """
-    logfile = "output.log"
-    LOGGER = setupLogging(filename=logfile)
-    LOGGER.info("Booting up the Naming Game.  Processing arguments.")
-
-    args = processArguments()
-    LOGGER.debug("Read arguments: " + str(args))
-    targetEnv = args.targetEnv if args.targetEnv else "LOCAL"
-
-    configs = processConfigs(args.configFile, targetEnv)
-    LOGGER.info(configs["startup_message"])
-
-    game = NamingGame(
-        numberOfActors=int(configs["number_of_actors"]),
-        maxIterations=int(configs["maximum_iterations"]),
-    )
-    game.play()
-
-
 if __name__ == "__main__":
+    """
+    Configure and run the NamingGame application.
+    """
     run()

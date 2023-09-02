@@ -24,8 +24,8 @@ def run():
     configs = processConfigs(args.configFile, targetEnv)
     LOGGER.info(configs["startup_message"])
 
-    generate_plot = configs.getboolean('generate_plot')
-    show_plot = configs.getboolean('show_plot')
+    generate_plot = configs.getboolean("generate_plot")
+    show_plot = configs.getboolean("show_plot")
 
     game = NamingGame(
         numberOfActors=int(configs["number_of_actors"]),

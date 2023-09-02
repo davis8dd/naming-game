@@ -27,7 +27,12 @@ class NamingGame(object):
     """
 
     def __init__(
-        self, numberOfActors=7, maxIterations=10, wordLength=10, actors=list(), gameId="run-" + str(time.time())
+        self,
+        numberOfActors=7,
+        maxIterations=10,
+        wordLength=10,
+        actors=list(),
+        gameId="run-" + str(time.time()),
     ):
         """
         Initialize a Naming Game with game parameters.
@@ -81,12 +86,11 @@ class NamingGame(object):
         A game statistics map that is written to a JSON file.
         """
         self.stats = {
-            "runParams":
-                {
-                    "id": "run-" + stats_id,
-                    "number of actors": len(self.actors),
-                    "max iterations": self.maxIterations,
-                },
+            "runParams": {
+                "id": "run-" + stats_id,
+                "number of actors": len(self.actors),
+                "max iterations": self.maxIterations,
+            },
             "IterationDataTypes": "[iteration, totalWords, uniqueWords, probabilityOfSuccess]",
             "iterationData": [],
         }
@@ -98,7 +102,6 @@ class NamingGame(object):
                 LOGGER.error("The statsWriter cannot collect statistics!")
             else:
                 LOGGER.debug(f"Stats are {self.stats}")
-                #writeToFile("coroutine-stats-" + stats_id + ".json", json.dumps(self.stats))
                 writeToFile(self.gameId + ".json", json.dumps(self.stats))
 
     def play(self):
@@ -123,7 +126,11 @@ class NamingGame(object):
         next(statsCollector)
         uniqueWords = self.getNumberOfUniqueWords()
         totalWords = self.getNumberOfWords()
-        LOGGER.info("Starting naming game, will stop after " + str(self.maxIterations) + " iterations.")
+        LOGGER.info(
+            "Starting naming game, will stop after "
+            + str(self.maxIterations)
+            + " iterations."
+        )
         while not self._isGameComplete(
             iteration, totalWords, uniqueWords, len(self.actors)
         ):
@@ -142,7 +149,9 @@ class NamingGame(object):
             for actor in self.actors:
                 LOGGER.debug("    " + str(actor))
             iteration += 1
-        LOGGER.info("Completed the naming game after " + str(iteration) + " iterations.")
+        LOGGER.info(
+            "Completed the naming game after " + str(iteration) + " iterations."
+        )
 
     def _isGameComplete(self, iteration, totalWords, uniqueWords, numberOfActors):
         """
@@ -198,7 +207,8 @@ class NamingGame(object):
         )
         probabilityOfSuccess = (
             # Word from speaker's vocabulary chosen at random
-            speaker.getVocabularySize() / listener.getVocabularySize()
+            speaker.getVocabularySize()
+            / listener.getVocabularySize()
         )
         return probabilityOfSuccess
 

@@ -42,3 +42,19 @@ Dynamics characterized by:
 - Time and height of peak of `Nw(t)`
 These quantities are expected to followe power law behaviors [reference p.31]
 
+### Reproduction of results
+Using a single pre-generated run of 10,000 iteratoins with 140 actors, we can see **total number of words** and **number of unique words** match those in **Baronchelli, 2006**:
+
+* Total number of words over time:
+![Total number of words-run1689137288](/docs/NamingGameTotalWords-run-1689137288.0891356.json.png)
+
+* Number of unique words over time:
+![Number of unique words-run1689137288](/docs/NamingGameUniqueWords-run-1689137288.0891356.json.png)
+
+Any evidence of reproducing the Success Rate reported in **Baronchelli, 2006** will be provided in the future.
+
+## License
+
+Distributed under the GNU General Public License version 3.
+
+See https://choosealicense.com/licenses/gpl-3.0/ or the included LICENSE file for full text.
